@@ -16,7 +16,7 @@ stretch() {
 }
 
 backup_servers() {
-	DNSMASQ_DNS=$(uci show dhcp | grep "@dnsmasq" | grep ".server=" | awk -F '=' '{print $2}' | sed "s/'//g" | tr ' ' ',')
+	DNSMASQ_DNS=$(uci show dhcp.@dnsmasq[0] | grep ".server=" | awk -F '=' '{print $2}' | sed "s/'//g" | tr ' ' ',')
 	if [ -n "${DNSMASQ_DNS}" ]; then
 		uci -q set $CONFIG.@global[0].dnsmasq_servers="${DNSMASQ_DNS}"
 		uci commit $CONFIG
@@ -43,7 +43,7 @@ logic_restart() {
 		backup_servers
 		#sed -i "/list server/d" /etc/config/dhcp >/dev/null 2>&1
 		for server in $(uci -q get dhcp.@dnsmasq[0].server); do
-			[ -n "$(echo $server | grep '\/')" ] || uci -q del_list dhcp.@dnsmasq[0].server="$server" 
+			[ -n "$(echo $server | grep '\/')" ] || uci -q del_list dhcp.@dnsmasq[0].server="$server"
 		done
 		/etc/init.d/dnsmasq restart >/dev/null 2>&1
 		restore_servers

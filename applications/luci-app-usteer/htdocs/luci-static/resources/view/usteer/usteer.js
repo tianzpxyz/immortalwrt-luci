@@ -6,9 +6,26 @@
 'require ui';
 'require form';
 'require uci';
+'require network';
 'require tools.widgets as widgets';
 
-var Hosts, Remotehosts, Remoteinfo, Localinfo, Clients;
+var Hosts, Remotehosts, Remoteinfo, Localinfo, Clients, WifiNetworks;
+
+var dns_cache = [];
+
+function SplitWlan(wlan) {
+	var wlansplit = [];
+	if (typeof wlan.split('#')[1] !== 'undefined') {
+		wlansplit=wlan.split('#');
+		if (typeof dns_cache[wlansplit[0]] !== 'undefined') {
+			wlansplit[0]=dns_cache[wlansplit[0]];
+		}
+	} else {
+		wlansplit[0]=_('This AP'); 
+		wlansplit[1]=wlan; 
+	}
+	return wlansplit;
+}
 
 
 function collectHearingClient(client_table_entries, mac) {
@@ -24,12 +41,14 @@ function collectHearingClient(client_table_entries, mac) {
 				SSID = Remoteinfo[wlanc]['ssid'];
 				freq = Remoteinfo[wlanc]['freq'];
 			}
+			var wlansplit=SplitWlan(wlanc);
 			client_table_entries.push([
-				'<nobr>' + wlanc + '</nobr>',
-				SSID,
-				freq,
+				'<nobr>' + '%h'.format(wlansplit[0]) + '</nobr>',
+				'<nobr>' + '%h'.format(wlansplit[1]) + '</nobr>',
+				'%h'.format(SSID),
+				'%h'.format(freq),
 				Clients[mac][wlanc]['connected'] === true ? 'Yes' : 'No',
-				typeof Clients[mac][wlanc]['signal'] !== 'undefined' ? Clients[mac][wlanc]['signal'] : ''
+				typeof Clients[mac][wlanc]['signal'] !== 'undefined' ? '%h'.format(Clients[mac][wlanc]['signal']) : ''
 			]);
 		}
 	}
@@ -43,7 +62,7 @@ var HearingMap = form.DummyValue.extend({
 		]);
 		for (var mac in Clients) {
 			var maciphost = '';
-			maciphost = mac;
+			maciphost = '%h'.format(mac);
 			var macUp = mac.toUpperCase();
 			var macn = macUp.replace(/:/g,'');
 			if (typeof Hosts[macUp] !== 'undefined') {
@@ -57,7 +76,8 @@ var HearingMap = form.DummyValue.extend({
 			);
 			var client_table = E('table', {'class': 'table cbi-section-table','id':'client_table'+macn}, [
 				E('tr', {'class': 'tr table-titles'}, [
-					E('th', {'class': 'th', 'style': 'width:35%'}, _('IP & Interface','Combination of IP and interface name in usteer overview')),
+					E('th', {'class': 'th'}, _('AP','Name or IP address of access point')),
+					E('th', {'class': 'th'}, _('Interface name','interface name in usteer overview')),
 					E('th', {'class': 'th', 'style': 'width:25%'}, _('SSID')),
 					E('th', {'class': 'th', 'style': 'width:15%'}, _('Frequency','BSS operating frequency in usteer overview')),
 					E('th', {'class': 'th', 'style': 'width:15%'}, _('Connected','Connection state in usteer overview')),
@@ -74,29 +94,33 @@ var HearingMap = form.DummyValue.extend({
 });
 
 
+
+
 function collectWlanAPInfoEntries(connectioninfo_table_entries, wlanAPInfos) {
 	for (var wlan in wlanAPInfos) {
+		var wlansplit=SplitWlan(wlan);
 		connectioninfo_table_entries.push([
-			'<nobr>' + wlan + '</nobr>',
-			wlanAPInfos[wlan]['bssid'],
-			wlanAPInfos[wlan]['ssid'],
-			wlanAPInfos[wlan]['freq'],
-			wlanAPInfos[wlan]['n_assoc'],
-			wlanAPInfos[wlan]['noise'],
-			wlanAPInfos[wlan]['load'],
-			wlanAPInfos[wlan]['max_assoc'],
-			typeof wlanAPInfos[wlan]['roam_events']['source'] !== 'undefined' ? wlanAPInfos[wlan]['roam_events']['source'] : '',
-			typeof wlanAPInfos[wlan]['roam_events']['target'] !== 'undefined' ? wlanAPInfos[wlan]['roam_events']['target'] : ''
+			'<nobr>' + '%h'.format(wlansplit[0]) + '</nobr>',
+			'<nobr>' + '%h'.format(wlansplit[1]) + '</nobr>',
+			'%h'.format(wlanAPInfos[wlan]['bssid']),
+			'%h'.format(wlanAPInfos[wlan]['ssid']),
+			'%h'.format(wlanAPInfos[wlan]['freq']),
+			'%h'.format(wlanAPInfos[wlan]['n_assoc']),
+			'%h'.format(wlanAPInfos[wlan]['noise']),
+			'%h'.format(wlanAPInfos[wlan]['load']),
+			'%h'.format(wlanAPInfos[wlan]['max_assoc']),
+			typeof wlanAPInfos[wlan]['roam_events']['source'] !== 'undefined' ? '%h'.format(wlanAPInfos[wlan]['roam_events']['source']) : '',
+			typeof wlanAPInfos[wlan]['roam_events']['target'] !== 'undefined' ? '%h'.format(wlanAPInfos[wlan]['roam_events']['target']) : ''
 		]);
 	}
 };
 
 function tootltip(mac, IP, hostname) {
 	var body= E([]);
-	body.appendChild(E('div', mac));
+	body.appendChild(E('div', '%h'.format(mac)));
 	if (typeof IP !== 'undefined') {
-		for (var IPaddr in IP['ipaddrs']) body.appendChild(E('div', IP['ipaddrs'][IPaddr]));
-		for (var IPaddr in IP['ip6addrs']) body.appendChild(E('div', IP['ip6addrs'][IPaddr]));;
+		for (var IPaddr in IP['ipaddrs']) body.appendChild(E('div', '%h'.format(IP['ipaddrs'][IPaddr])));
+		for (var IPaddr in IP['ip6addrs']) body.appendChild(E('div', '%h'.format(IP['ip6addrs'][IPaddr])));;
 	}
 	if (hostname !== '') {
 		body.appendChild(E('div', '%h'.format(hostname)));
@@ -133,26 +157,59 @@ function collectWlanAPInfos(compactconnectioninfo_table_entries, wlanAPInfos) {
 						);
 					}
 		}
+		var wlansplit=SplitWlan(wlan);
 		compactconnectioninfo_table_entries.push([
-			'<nobr>'+wlan+'</nobr>', 
-			wlanAPInfos[wlan]['ssid'],
-			wlanAPInfos[wlan]['freq'],
-			wlanAPInfos[wlan]['load'],
-			wlanAPInfos[wlan]['n_assoc'],
+			'<nobr>' + '%h'.format(wlansplit[0]) + '</nobr>',
+			'<nobr>' + '%h'.format(wlansplit[1]) + '</nobr>',
+			'%h'.format(wlanAPInfos[wlan]['ssid']),
+			'%h'.format(wlanAPInfos[wlan]['freq']),
+			'%h'.format(wlanAPInfos[wlan]['load']),
+			'%h'.format(wlanAPInfos[wlan]['n_assoc']),
 			hostl
 		]);
 	}
 };
 
+var callNetworkRrdnsLookup = rpc.declare({
+	object: 'network.rrdns',
+	method: 'lookup',
+	params: [ 'addrs', 'timeout', 'limit' ],
+	expect: { '': {} }
+});
+
+
 function collectRemoteHosts (remotehosttableentries,Remotehosts) {
+	const getUndefinedDnsCacheIPs = (Remotehosts, dns_cache) =>
+		Object.keys(Remotehosts).filter(IPaddr => !dns_cache.hasOwnProperty(IPaddr));
+
+	var ipAddrs = getUndefinedDnsCacheIPs(Remotehosts, dns_cache);
+
+	L.resolveDefault(callNetworkRrdnsLookup(ipAddrs, 1000, 1000), {}).then(function(replies) {
+				for (var address of ipAddrs) {
+					if (!address)
+						continue;
+					if (replies[address]) {
+						dns_cache[address] = replies[address];
+						continue;
+					} else {
+						dns_cache[address]=Hosts[
+							Object.keys(Hosts).find(mac =>   
+								((typeof Hosts[mac]['name'] !== 'undefined') && 
+									((Object.keys(Hosts[mac]['ip6addrs']).find(IPaddr2 => (address === Hosts[mac]['ip6addrs'][IPaddr2]))) ||
+									(Object.keys(Hosts[mac]['ipaddrs']).find(IPaddr2 => (address === Hosts[mac]['ipaddrs'][IPaddr2])))))
+									)
+							]['name'];
+					}
+				}
+	});
+
 	for (var IPaddr in Remotehosts) {
-			remotehosttableentries.push([IPaddr, Remotehosts[IPaddr]['id']]);
-		}
+		remotehosttableentries.push([IPaddr,'%h'.format(dns_cache[IPaddr]),'%h'.format(Remotehosts[IPaddr]['id'])]);
+	}
 }
 
 
 var Clientinfooverview = form.DummyValue.extend({
-
 	renderWidget: function () {
 		var body = E([
 			E('h3', _('Remote hosts'))
@@ -160,6 +217,7 @@ var Clientinfooverview = form.DummyValue.extend({
 		var remotehost_table = E('table', {'class': 'table cbi-section-table', 'id': 'remotehost_table'}, [
 			E('tr', {'class': 'tr table-titles'}, [
 				E('th', {'class': 'th'}, _('IP address')),
+				E('th', {'class': 'th'}, _('Hostname')),
 				E('th', {'class': 'th'}, _('Identifier'))
 			])
 		]);
@@ -172,7 +230,8 @@ var Clientinfooverview = form.DummyValue.extend({
 		);
 		var connectioninfo_table = E('table', {'class': 'table cbi-section-table', 'id': 'connectioninfo_table'}, [
 			E('tr', {'class': 'tr table-titles'}, [
-				E('th', {'class': 'th'}, _('IP & Interface name','Combination of IP and interface name in usteer overview')),
+				E('th', {'class': 'th'}, _('AP','Name or IP address of access point')),
+				E('th', {'class': 'th'}, _('Interface name','interface name in usteer overview')),
 				E('th', {'class': 'th'}, _('BSSID')),
 				E('th', {'class': 'th'}, _('SSID')),
 				E('th', {'class': 'th'}, _('Frequency','BSS operating frequency in usteer overview')),
@@ -192,7 +251,8 @@ var Clientinfooverview = form.DummyValue.extend({
 		body.appendChild(connectioninfo_table);
 		var compactconnectioninfo_table = E('table', {'class': 'table cbi-section-table','id': 'compactconnectioninfo_table'}, [
 			E('tr', {'class': 'tr table-titles'}, [
-				E('th', {'class': 'th'}, _('IP & Interface name', 'Combination of IP and interface name in usteer overview')),
+				E('th', {'class': 'th'}, _('AP','Name or IP address of access point')),
+				E('th', {'class': 'th'}, _('Interface name','interface name in usteer overview')),
 				E('th', {'class': 'th'}, _('SSID')),
 				E('th', {'class': 'th'}, _('Frequency', 'BSS operating frequency in usteer overview')),
 				E('th', {'class': 'th'}, _('Load', 'Channel load in usteer overview')),
@@ -267,7 +327,8 @@ return view.extend({
 			this.callGetRemotehosts().catch (function (){return null;}),
 			this.callGetRemoteinfo().catch (function (){return null;}),
 			this.callGetLocalinfo().catch (function (){return null;}),
-			this.callGetClients().catch (function (){return null;})
+			this.callGetClients().catch (function (){return null;}),
+			network.getWifiNetworks()
 		]);
 	},
 
@@ -320,6 +381,7 @@ return view.extend({
 		Remoteinfo = data[3];
 		Localinfo = data[4];
 		Clients = data[5];
+		WifiNetworks = data[6];
 
 		s = m.section(form.TypedSection);
 		s.anonymous = true;
@@ -548,6 +610,11 @@ return view.extend({
 		o.datatype = 'list(string)';
 
 		o = s.taboption('settings', form.DynamicList, 'ssid_list', _('SSID list'), _('List of SSIDs to enable steering on'));
+		WifiNetworks.forEach(function (wifiNetwork) {
+			if (wifiNetwork.getSSID() && (!o.keylist || o.keylist.indexOf(wifiNetwork.getSSID()) === -1)) {
+				o.value(wifiNetwork.getSSID())
+			}
+		});
 		o.optional = true;
 		o.datatype = 'list(string)';
 
