@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: LuCI\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-06-10 03:40+0200\n"
-"PO-Revision-Date: 2024-02-27 16:41+0000\n"
+"PO-Revision-Date: 2024-05-18 06:49+0000\n"
 "Last-Translator: Random <random-r@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/openwrt/"
 "luciapplicationsopkg/it/>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.5-dev\n"
+"X-Generator: Weblate 5.6-dev\n"
 
 #: applications/luci-app-opkg/htdocs/luci-static/resources/view/opkg.js:1095
 msgid "%s used (%1024mB used of %1024mB, %1024mB free)"
@@ -22,6 +22,8 @@ msgstr "%s usato (%1024mB usati di %1024mB, %1024mB liberi)"
 msgid ""
 "<strong>Warning!</strong> Package operations can <a %s>break your system</a>."
 msgstr ""
+"<strong>Attenzione!</strong>Operazioni sul pacchetto possono <a %s>rendere "
+"inutilizzabile il sistema</a>."
 
 #: applications/luci-app-opkg/htdocs/luci-static/resources/view/opkg.js:1163
 msgid "Actions"
@@ -142,7 +144,7 @@ msgstr "Installa"
 
 #: applications/luci-app-opkg/htdocs/luci-static/resources/view/opkg.js:1133
 msgid "Install additional software and upgrade existing packages with opkg."
-msgstr ""
+msgstr "Installa software aggiuntivo e aggiorna i pacchetti esistenti con opkg."
 
 #: applications/luci-app-opkg/htdocs/luci-static/resources/view/opkg.js:780
 msgid "Install suggested translation packages as well"

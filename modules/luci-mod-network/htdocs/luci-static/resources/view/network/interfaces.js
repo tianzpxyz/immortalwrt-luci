@@ -175,9 +175,9 @@ function iface_updown(up, id, ev, force) {
 
 				ui.showModal(_('Confirm disconnect'), [
 					E('p', _('You appear to be currently connected to the device via the "%h" interface. Do you really want to shut down the interface?').format(id)),
-					E('div', { 'class': 'right' }, [
+					E('div', { 'class': 'button-row' }, [
 						E('button', {
-							'class': 'cbi-button cbi-button-neutral',
+							'class': 'btn cbi-button cbi-button-neutral',
 							'click': function(ev) {
 								btns[1].classList.remove('spinning');
 								btns[1].disabled = false;
@@ -188,7 +188,7 @@ function iface_updown(up, id, ev, force) {
 						}, _('Cancel')),
 						' ',
 						E('button', {
-							'class': 'cbi-button cbi-button-negative important',
+							'class': 'btn cbi-button cbi-button-negative important',
 							'click': function(ev) {
 								dsc.setAttribute('disconnect', '');
 								dom.content(dsc, E('em', _('Interface is shutting down...')));
@@ -257,6 +257,7 @@ function has_sourcefilter(proto) {
 	case 'pppoe':
 	case 'pptp':
 	case 'qmi':
+	case 'quectel':
 		return true;
 	}
 
@@ -1597,9 +1598,24 @@ return view.extend({
 			_('This prefix is randomly generated at first install.'));
 		o.datatype = 'cidr6';
 
-		o = s.option(form.Flag, 'packet_steering', _('Packet Steering'), _('Enable packet steering across all CPUs. May help or hinder network speed.'));
+		o = s.option(form.ListValue, 'packet_steering', _('Packet Steering'), _('Enable packet steering across CPUs. May help or hinder network speed.'));
+		o.value('', _('Disabled'));
+		o.value('1',_('Enabled'));
+		o.value('2',_('Enabled (all CPUs)'));
 		o.optional = true;
 
+		var steer_flow = uci.get('network', 'globals', 'steering_flows');	
+
+		o = s.option(form.Value, 'steering_flows', _('Steering flows (<abbr title="Receive Packet Steering">RPS</abbr>)'),
+			_('Directs packet flows to specific CPUs where the local socket owner listens (the local service).') + ' ' +
+			_('Note: this setting is for local services on the device only (not for forwarding).'));
+		o.value('', _('Standard: none'));
+		o.value('128', _('Suggested: 128'));
+		o.value('256', _('256'));
+		o.depends('packet_steering', '1');
+		o.depends('packet_steering', '2');
+		o.datatype = 'uinteger';
+		o.default = steer_flow;
 
 		if (dslModemType != null) {
 			s = m.section(form.TypedSection, 'dsl', _('DSL'));

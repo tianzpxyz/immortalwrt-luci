@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"PO-Revision-Date: 2024-03-20 03:44+0000\n"
-"Last-Translator: Džiugas J <dziugas1959@hotmail.com>\n"
+"PO-Revision-Date: 2024-07-21 21:09+0000\n"
+"Last-Translator: Džiugas Januševičius <dziugas1959@hotmail.com>\n"
 "Language-Team: Lithuanian <https://hosted.weblate.org/projects/openwrt/"
 "luciapplicationsopenvpn/lt/>\n"
 "Language: lt\n"
@@ -11,7 +11,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && ("
 "n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 5.5-dev\n"
+"X-Generator: Weblate 5.7-dev\n"
 
 #: applications/luci-app-openvpn/luasrc/model/cbi/openvpn-advanced.lua:372
 msgid "'net30', 'p2p', or 'subnet'"
@@ -72,7 +72,9 @@ msgstr "Papildyti/Pridėti žurnalą į failą"
 
 #: applications/luci-app-openvpn/luasrc/model/cbi/openvpn-advanced.lua:498
 msgid "Authenticate using username/password"
-msgstr "Autentifikuoti naudodamas vartotojo vardą/slaptažodį"
+msgstr ""
+"Autentifikuoti, naudodamas naudotojo/vartotojo vardą (t.y. "
+"slapyvardį)/slaptažodį"
 
 #: applications/luci-app-openvpn/luasrc/model/cbi/openvpn-advanced.lua:563
 msgid "Automatically redirect default route"
@@ -126,7 +128,7 @@ msgstr "Konfigūruoti kliento režimą"
 #: applications/luci-app-openvpn/luasrc/model/cbi/openvpn-advanced.lua:389
 #: applications/luci-app-openvpn/luasrc/model/cbi/openvpn-basic.lua:37
 msgid "Configure server bridge"
-msgstr "Konfigūruoti serverio tinklo jungimą"
+msgstr "Konfigūruoti serverio „tinklo tilto“ – jungimą"
 
 #: applications/luci-app-openvpn/luasrc/model/cbi/openvpn-advanced.lua:384
 #: applications/luci-app-openvpn/luasrc/model/cbi/openvpn-basic.lua:33
@@ -265,7 +267,7 @@ msgstr "Įjungti/Įgalinti valdymo sąsają <em>IP</em> <em>prievade</em>"
 
 #: applications/luci-app-openvpn/luasrc/model/cbi/openvpn.lua:104
 msgid "Enabled"
-msgstr "Įjungta/Įgalinta (-as)"
+msgstr "Įjungta/Įgalinta (-s/-i)"
 
 #: applications/luci-app-openvpn/luasrc/model/cbi/openvpn-advanced.lua:759
 msgid "Encrypt and authenticate all control channel packets with the key"
@@ -542,8 +544,8 @@ msgid "Restart after remote ping timeout"
 msgstr ""
 "Paleisti iš naujo po nuotolinio ryšio atsako pasibaigusios užklausos laiko"
 
-#: applications/luci-app-openvpn/luasrc/model/cbi/openvpn-advanced.lua:807
-#: applications/luci-app-openvpn/luasrc/model/cbi/openvpn-advanced.lua:811
+#: applications/luci-app-openvpn/luasrc/model/cbi/openvpn-advanced.lua:810
+#: applications/luci-app-openvpn/luasrc/model/cbi/openvpn-advanced.lua:819
 msgid "Restrict the allowed ciphers to be negotiated"
 msgstr "Apriboti leidžiamus šifrus, kuriuos reikia derinti"
 
@@ -824,7 +826,7 @@ msgstr "Naudoti „TUN/TAP“ įrenginio mazgą"
 
 #: applications/luci-app-openvpn/luasrc/model/cbi/openvpn-advanced.lua:484
 msgid "Use username as common name"
-msgstr "Naudoti vartotojo vardą kaip bendrą vardą"
+msgstr "Naudoti naudotojo/vartotojo vardą (t.y slapyvardį) kaip bendrą vardą"
 
 #: applications/luci-app-openvpn/luasrc/model/cbi/openvpn-advanced.lua:380
 msgid "VPN"
